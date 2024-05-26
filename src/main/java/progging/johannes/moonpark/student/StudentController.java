@@ -1,4 +1,4 @@
-package progging.johannes.studenttemplate.student;
+package progging.johannes.moonpark.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;

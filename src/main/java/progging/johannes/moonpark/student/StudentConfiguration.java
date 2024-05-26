@@ -1,4 +1,4 @@
-package progging.johannes.studenttemplate.student;
+package progging.johannes.moonpark.student;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

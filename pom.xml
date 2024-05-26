@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>progging.johannes</groupId>
-	<artifactId>studenttemplate</artifactId>
+	<artifactId>moonpark</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>studenttemplate</name>
-	<description>Simple student management application using java, spring boot and jpa.</description>
+	<name>moonpark</name>
+	<description>A simple parking application using java, spring boot and jpa.</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

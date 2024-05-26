@@ -1,4 +1,4 @@
-package progging.johannes.studenttemplate.student;
+package progging.johannes.moonpark.student;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

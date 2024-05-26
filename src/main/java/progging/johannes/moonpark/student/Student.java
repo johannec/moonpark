@@ -1,4 +1,4 @@
-package progging.johannes.studenttemplate.student;
+package progging.johannes.moonpark.student;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

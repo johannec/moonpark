@@ -1,10 +1,10 @@
-package progging.johannes.studenttemplate;
+package progging.johannes.moonpark;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StudentTemplateApplicationTests {
+class MoonParkApplicationTests {
 
 	@Test
 	void contextLoads() {

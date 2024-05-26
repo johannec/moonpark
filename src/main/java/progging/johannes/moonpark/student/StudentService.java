@@ -1,4 +1,4 @@
-package progging.johannes.studenttemplate.student;
+package progging.johannes.moonpark.student;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
