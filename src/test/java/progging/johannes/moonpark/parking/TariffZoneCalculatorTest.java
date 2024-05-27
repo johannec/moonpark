@@ -54,6 +54,15 @@ class TariffZoneCalculatorTest {
             long result = tariffZoneCalculator.calculatePriceM1(startedParking, endedParking);
             assertEquals(120, result);
         }
+
+        @Test
+        void calculatePriceM1_givenOneDayOneHourAndFiftyNineMinutesParking_shouldReturnPrice1560() {
+            LocalDateTime startedParking = LocalDateTime.of(2024, 5, 26, 2, 0, 4);
+            LocalDateTime endedParking = LocalDateTime.of(2024, 5, 27, 3, 59, 4);
+
+            long result = tariffZoneCalculator.calculatePriceM1(startedParking, endedParking);
+            assertEquals(1560, result);
+        }
     }
 
     @Nested
@@ -84,6 +93,24 @@ class TariffZoneCalculatorTest {
 
             long result = tariffZoneCalculator.calculatePriceM2(startedParking, endedParking);
             assertEquals(400, result);
+        }
+
+        @Test
+        void calculatePrice_given2HrsParkingStartingOnAWeekDayButEndingDuringTheWeekend_shouldReturnPrice2500() {
+            LocalDateTime startedParkingOnSaturday = LocalDateTime.of(2024, 5, 24, 23, 0, 4);
+            LocalDateTime endedParkingOnSunday = LocalDateTime.of(2024, 5, 25, 11, 0, 4);
+
+            long result = tariffZoneCalculator.calculatePriceM2(startedParkingOnSaturday, endedParkingOnSunday);
+            assertEquals(2500, result);
+        }
+
+        @Test
+        void calculatePrice_given2HrsParkingStartingDuringTheWeekendAndEndingDuringAWeekDay_shouldReturnPrice1400() {
+            LocalDateTime startedParkingOnSaturday = LocalDateTime.of(2024, 5, 26, 23, 0, 4);
+            LocalDateTime endedParkingOnSunday = LocalDateTime.of(2024, 5, 27, 11, 0, 4);
+
+            long result = tariffZoneCalculator.calculatePriceM2(startedParkingOnSaturday, endedParkingOnSunday);
+            assertEquals(1400, result);
         }
     }
 

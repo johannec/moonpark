@@ -31,8 +31,17 @@ public class TariffZoneCalculator {
 
     long calculatePriceM2(LocalDateTime startedParking, LocalDateTime endedParking) {
         long hoursToPayFor = getHoursToPayFor(startedParking, endedParking);
+        final long HOURLY_PRICE = 100;
 
-        return isWeekend(startedParking) ? hoursToPayFor * 200 : hoursToPayFor * 100;
+        for(int i = 0; i < hoursToPayFor; i++) {
+            DayOfWeek dayOfWeek = DayOfWeek.of(startedParking.plusHours(i).get(ChronoField.DAY_OF_WEEK));
+            if(dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                price += HOURLY_PRICE*2;
+            } else {
+                price += HOURLY_PRICE;
+            }
+        }
+        return price;
     }
 
     long calculatePriceM3(LocalDateTime startedParking, LocalDateTime endedParking) {
