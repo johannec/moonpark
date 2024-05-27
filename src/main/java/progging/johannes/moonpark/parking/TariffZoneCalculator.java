@@ -35,7 +35,7 @@ public class TariffZoneCalculator {
 
         for(int i = 0; i < hoursToPayFor; i++) {
             DayOfWeek dayOfWeek = DayOfWeek.of(startedParking.plusHours(i).get(ChronoField.DAY_OF_WEEK));
-            if(dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+            if(isWeekend(dayOfWeek)) {
                 price += HOURLY_PRICE*2;
             } else {
                 price += HOURLY_PRICE;
@@ -46,34 +46,67 @@ public class TariffZoneCalculator {
 
     long calculatePriceM3(LocalDateTime startedParking, LocalDateTime endedParking) {
         long minutesToPayFor = getMinutesToPayFor(startedParking, endedParking);
+        final long MINUTE_PRICE_FROM_08_TO_16 = 2;
+        final long MINUTE_PRICE_FROM_16_TO_08 = 3;
+        final long HOURLY_PRICE_FROM_08_TO_16 = MINUTE_PRICE_FROM_08_TO_16*60;
+        final long HOURLY_PRICE_FROM_16_TO_08 = MINUTE_PRICE_FROM_16_TO_08*60;
 
-        if(isBetweenMondayAndSaturday(startedParking) && (startedParking.getHour() >= 8 && startedParking.getHour() <= 15)) {
-                minutesToPayFor = Math.max(0, minutesToPayFor - 60);
-        }
-
-        while(minutesToPayFor != 0) {
-            minutesToPayFor--;
-            if(isBetweenMondayAndSaturday(startedParking)) {
-                if(startedParking.getHour() >= 8 && startedParking.getHour() <= 15) {
-                    price += 2;
+        DayOfWeek dayOfWeekStartedParking = DayOfWeek.of(startedParking.get(ChronoField.DAY_OF_WEEK));
+        if(isBetweenMondayAndSaturday(dayOfWeekStartedParking)) {
+            if(startedParking.getHour() >= 8 && startedParking.getHour() < 16) {
+                if (minutesToPayFor <= 60) {
+                    price = 0;
+                    return price;
                 } else {
-                    price += 3;
+                    minutesToPayFor -= 60;
                 }
             }
+        }
+
+        long hoursToPayFor = minutesToPayFor / 60;
+        long remainingMinutes = minutesToPayFor % 60;
+
+        if(hoursToPayFor != 0) {
+            addHourPricing(startedParking, hoursToPayFor, HOURLY_PRICE_FROM_08_TO_16, HOURLY_PRICE_FROM_16_TO_08);
+        }
+
+        if(remainingMinutes != 0) {
+            addMinutePricing(startedParking, endedParking, remainingMinutes, MINUTE_PRICE_FROM_08_TO_16, MINUTE_PRICE_FROM_16_TO_08);
         }
         return price;
     }
 
-    // ---------- HELPER METHODS ---------
-    private static long getMinutesToPayFor(LocalDateTime startedParking, LocalDateTime endedParking) {
-        long minuteDifference = ChronoUnit.MINUTES.between(startedParking, endedParking);
-        log.info("Minute difference: {}", minuteDifference);
-
-        return minuteDifference;
+    private void addMinutePricing(LocalDateTime startedParking, LocalDateTime endedParking, long remainingMinutes, long MINUTE_PRICE_FROM_08_TO_16, long MINUTE_PRICE_FROM_16_TO_08) {
+        DayOfWeek dayOfWeekEndedParking = DayOfWeek.of(endedParking.get(ChronoField.DAY_OF_WEEK));
+        if(isBetweenMondayAndSaturday(dayOfWeekEndedParking)) {
+            if(startedParking.getHour() >= 8 && startedParking.getHour() <= 15) {
+                price += remainingMinutes * MINUTE_PRICE_FROM_08_TO_16;
+            } else {
+                price += remainingMinutes * MINUTE_PRICE_FROM_16_TO_08;
+            }
+        }
     }
 
-    private static boolean isBetweenMondayAndSaturday(LocalDateTime date) {
-        DayOfWeek dayOfWeek = DayOfWeek.of(date.get(ChronoField.DAY_OF_WEEK));
+    private void addHourPricing(LocalDateTime startedParking, long hoursToPayFor, long HOURLY_PRICE_FROM_08_TO_16, long HOURLY_PRICE_FROM_16_TO_08) {
+        for(int i = 0; i < hoursToPayFor; i++) {
+            DayOfWeek dayOfWeek = DayOfWeek.of(startedParking.plusHours(i).get(ChronoField.DAY_OF_WEEK));
+            LocalDateTime startedParkingAddingHours = startedParking.plusHours(i);
+            if(isBetweenMondayAndSaturday(dayOfWeek)) {
+                if(startedParkingAddingHours.getHour() >= 8 && startedParkingAddingHours.getHour() <= 15) {
+                    price += HOURLY_PRICE_FROM_08_TO_16;
+                } else {
+                    price += HOURLY_PRICE_FROM_16_TO_08;
+                }
+            }
+        }
+    }
+
+    // ---------- HELPER METHODS ---------
+    private static long getMinutesToPayFor(LocalDateTime startedParking, LocalDateTime endedParking) {
+        return ChronoUnit.MINUTES.between(startedParking, endedParking);
+    }
+
+    private static boolean isBetweenMondayAndSaturday(DayOfWeek dayOfWeek) {
         return dayOfWeek != DayOfWeek.SUNDAY;
     }
 
@@ -92,11 +125,9 @@ public class TariffZoneCalculator {
     private static void logging(long minuteDifference, long hourDifference) {
         log.info("Minute difference: {}", minuteDifference);
         log.info("Hour difference: {}", hourDifference);
-
     }
 
-    public static boolean isWeekend(final LocalDateTime date) {
-        DayOfWeek dayOfWeek = DayOfWeek.of(date.get(ChronoField.DAY_OF_WEEK));
+    public static boolean isWeekend(DayOfWeek dayOfWeek) {
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 }
