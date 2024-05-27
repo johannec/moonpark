@@ -38,11 +38,12 @@ public class TariffZoneCalculator {
     long calculatePriceM3(LocalDateTime startedParking, LocalDateTime endedParking) {
         long minutesToPayFor = getMinutesToPayFor(startedParking, endedParking);
 
-        if(startedParking.getHour() >= 8 && startedParking.getHour() <= 15 && (minutesToPayFor <= 60)) {
-            minutesToPayFor = Math.max(0, minutesToPayFor - 60);
+        if(isBetweenMondayAndSaturday(startedParking) && (startedParking.getHour() >= 8 && startedParking.getHour() <= 15)) {
+                minutesToPayFor = Math.max(0, minutesToPayFor - 60);
         }
 
         while(minutesToPayFor != 0) {
+            minutesToPayFor--;
             if(isBetweenMondayAndSaturday(startedParking)) {
                 if(startedParking.getHour() >= 8 && startedParking.getHour() <= 15) {
                     price += 2;
@@ -50,7 +51,6 @@ public class TariffZoneCalculator {
                     price += 3;
                 }
             }
-            minutesToPayFor--;
         }
         return price;
     }
